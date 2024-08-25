@@ -5,7 +5,7 @@ const generateId = () :string => {
 }
 
 const inRange = (index: number, min: number, max: number) : boolean => (
-    (index >= 0) && (index <= max)
+    (index >= min) && (index <= max)
 );
 
 const notInRange = (index: number, min: number, max: number) : boolean => !(inRange(index, min, max));
