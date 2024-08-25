@@ -1,7 +1,7 @@
 import path from "path";
 
 import { generateId, notInRange } from "./helpers";
-import { FormatTasks } from "./format-tasks";
+import { JsonSerializer } from "./json-serializer";
 import { Task, AllTasks } from "./interfaces";
 
 class TaskList {
@@ -26,7 +26,7 @@ class TaskList {
             updatedAt: "",            
         }
 
-        let allTasks: AllTasks = FormatTasks.jsonToObject(this.name, this.path);
+        let allTasks: AllTasks = JsonSerializer.jsonToObject(this.name, this.path);
 
         allTasks = {
             ...allTasks,
@@ -36,13 +36,13 @@ class TaskList {
             ]
         };
 
-        FormatTasks.objectToJson(this.path, allTasks);
+        JsonSerializer.objectToJson(this.path, allTasks);
     };
 
     public updateTask(taskIndex: number, task: string): void {
         if (notInRange(taskIndex, 0, this.getAllTasks().length - 1) || !task) return;
 
-        let allTasks: AllTasks = FormatTasks.jsonToObject(this.name, this.path);
+        let allTasks: AllTasks = JsonSerializer.jsonToObject(this.name, this.path);
 
         if (!allTasks.tasks.length) return;
         
@@ -52,13 +52,13 @@ class TaskList {
             updatedAt: `${new Date().toLocaleTimeString()} ${new Date().toLocaleDateString()}`,
         };
 
-        FormatTasks.objectToJson(this.path, allTasks);
+        JsonSerializer.objectToJson(this.path, allTasks);
     };
 
     public deleteTask(taskIndex: number): void {
         if (notInRange(taskIndex, 0, this.getAllTasks().length - 1)) return;
 
-        let allTasks: AllTasks = FormatTasks.jsonToObject(this.name, this.path);
+        let allTasks: AllTasks = JsonSerializer.jsonToObject(this.name, this.path);
 
         if (!allTasks.tasks.length) return;
 
@@ -67,14 +67,14 @@ class TaskList {
             tasks: allTasks.tasks.filter((_, index) => index !== taskIndex),
         };
 
-        FormatTasks.objectToJson(this.path, filteredTasks);
+        JsonSerializer.objectToJson(this.path, filteredTasks);
     };
 
     public updateTaskStatus(taskIndex: number, status: string): void {
         if (notInRange(taskIndex, 0, this.getAllTasks().length - 1) || !status) return;
 
 
-        let allTasks: AllTasks = FormatTasks.jsonToObject(this.name, this.path);
+        let allTasks: AllTasks = JsonSerializer.jsonToObject(this.name, this.path);
         
         if (!allTasks.tasks.length) return;
 
@@ -84,11 +84,11 @@ class TaskList {
             updatedAt: `${new Date().toLocaleTimeString()} ${new Date().toLocaleDateString()}`,
         };
 
-        FormatTasks.objectToJson(this.path, allTasks);
+        JsonSerializer.objectToJson(this.path, allTasks);
     }
 
     public getAllTasks(): Task[] {
-        const allTasks: AllTasks = FormatTasks.jsonToObject(this.name, this.path);
+        const allTasks: AllTasks = JsonSerializer.jsonToObject(this.name, this.path);
 
         return allTasks.tasks;
     };
