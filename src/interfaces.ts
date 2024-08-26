@@ -1,14 +1,16 @@
+type taskStatus = "to do" | "in progress" | "done";
+
 interface Task {
     id: string;
     description: string,
-    status: string,
+    status: taskStatus,
     createdAt: string,
     updatedAt: string,
 };
 
 interface AllTasks {
-    name: string;
+    title: string;
     tasks: Task[],
 };
 
-export { Task, AllTasks };
+export { Task, AllTasks, taskStatus };
