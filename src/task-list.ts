@@ -1,22 +1,27 @@
 import path from "path";
 
 import { generateId, notInRange } from "./helpers";
-import { JsonSerializer } from "./json-serializer";
-import { Task, AllTasks } from "./interfaces";
+import { TasksManager } from "./task-manager";
+import { Task, AllTasks, taskStatus } from "./interfaces";
+import { OutOfRangeError, NotValidStatusError, EmptyTaskInputError, EmptyTaskListError } from "./errors";
 
 class TaskList {
-    private name: string;
+    private title: string;
     private path: string;
+    private tasksManager: TasksManager;
 
-    constructor(name: string) {
-        this.name = name.toLowerCase();
+    constructor(tasksManager: TasksManager, title: string, folderPath: string) {
+        this.tasksManager = tasksManager;
+        this.title = title.toLowerCase();
 
-        const jsonFilePath = path.join(__dirname, `../json-data/${this.name}-tasks.json`);
+        const jsonFilePath = path.join(__dirname, `./${folderPath}/${this.title}-tasks.json`);
         this.path = jsonFilePath;
     }
 
-    public addTask(task: string): void {
-        if (!task) return;
+    addTask(task: string): void {
+        if (!task) {
+            throw new EmptyTaskInputError();
+        };
 
         const newTask: Task = {
             id: generateId(),
@@ -26,7 +31,7 @@ class TaskList {
             updatedAt: "",            
         }
 
-        let allTasks: AllTasks = JsonSerializer.jsonToObject(this.name, this.path);
+        let allTasks: AllTasks = this.tasksManager.getTasks(this.title, this.path);
 
         allTasks = {
             ...allTasks,
@@ -36,59 +41,84 @@ class TaskList {
             ]
         };
 
-        JsonSerializer.objectToJson(this.path, allTasks);
+        this.tasksManager.setTasks(this.path, allTasks);
     };
 
-    public updateTask(taskIndex: number, task: string): void {
-        if (notInRange(taskIndex, 0, this.getAllTasks().length - 1) || !task) return;
+    updateTask(taskIndex: number, task: string): void {
+        const tasks = this.getAllTasks();
 
-        let allTasks: AllTasks = JsonSerializer.jsonToObject(this.name, this.path);
+        if (!tasks.length) {
+            throw new EmptyTaskListError();
+        };
 
-        if (!allTasks.tasks.length) return;
-        
+        if (notInRange(taskIndex, 0, tasks.length - 1)) {
+            throw new OutOfRangeError();
+        };
+
+        if (!task) {
+            throw new EmptyTaskInputError();
+        };
+
+        let allTasks: AllTasks = this.tasksManager.getTasks(this.title, this.path);
+
         allTasks.tasks[taskIndex] = {
             ...allTasks.tasks[taskIndex],
             description: task,
             updatedAt: `${new Date().toLocaleTimeString()} ${new Date().toLocaleDateString()}`,
         };
 
-        JsonSerializer.objectToJson(this.path, allTasks);
+        this.tasksManager.setTasks(this.path, allTasks);
     };
 
     public deleteTask(taskIndex: number): void {
-        if (notInRange(taskIndex, 0, this.getAllTasks().length - 1)) return;
+        const tasks = this.getAllTasks();
 
-        let allTasks: AllTasks = JsonSerializer.jsonToObject(this.name, this.path);
+        if (!tasks.length) {
+            throw new EmptyTaskListError();
+        };
 
-        if (!allTasks.tasks.length) return;
+        if (notInRange(taskIndex, 0, tasks.length - 1)) {
+            throw new OutOfRangeError();
+        };
+
+        let allTasks: AllTasks = this.tasksManager.getTasks(this.title, this.path);
 
         const filteredTasks = {
             ...allTasks,
             tasks: allTasks.tasks.filter((_, index) => index !== taskIndex),
         };
 
-        JsonSerializer.objectToJson(this.path, filteredTasks);
+        this.tasksManager.setTasks(this.path, filteredTasks);
     };
 
-    public updateTaskStatus(taskIndex: number, status: string): void {
-        if (notInRange(taskIndex, 0, this.getAllTasks().length - 1) || !status) return;
+    public updateTaskStatus(taskIndex: number, status: taskStatus): void {
+        const tasks = this.getAllTasks();
 
+        if (!tasks.length) {
+            throw new EmptyTaskListError();
+        };
 
-        let allTasks: AllTasks = JsonSerializer.jsonToObject(this.name, this.path);
+        if (notInRange(taskIndex, 0, tasks.length - 1)) {
+            throw new OutOfRangeError();
+        };
+
+        if (!status) {
+            throw new NotValidStatusError();
+        };
+
+        let allTasks: AllTasks = this.tasksManager.getTasks(this.title, this.path);
         
-        if (!allTasks.tasks.length) return;
-
         allTasks.tasks[taskIndex] = {
             ...allTasks.tasks[taskIndex],
             status,
             updatedAt: `${new Date().toLocaleTimeString()} ${new Date().toLocaleDateString()}`,
         };
 
-        JsonSerializer.objectToJson(this.path, allTasks);
+        this.tasksManager.setTasks(this.path, allTasks);
     }
 
     public getAllTasks(): Task[] {
-        const allTasks: AllTasks = JsonSerializer.jsonToObject(this.name, this.path);
+        const allTasks: AllTasks = this.tasksManager.getTasks(this.title, this.path);
 
         return allTasks.tasks;
     };
