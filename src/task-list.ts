@@ -1,7 +1,7 @@
 import path from "path";
 
 import { generateId, notInRange } from "./helpers";
-import { TasksManager } from "./task-manager";
+import { TasksManager } from "./tasks-manager";
 import { Task, AllTasks, taskStatus } from "./interfaces";
 import { OutOfRangeError, NotValidStatusError, EmptyTaskInputError, EmptyTaskListError } from "./errors";
 

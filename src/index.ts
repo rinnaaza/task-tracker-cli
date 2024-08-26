@@ -2,7 +2,7 @@
 import { TaskList } from "./task-list";
 import { printHelp } from "./print-help";
 import { printTasks } from "./print-tasks";
-import { JsonSerializer, TasksDAO } from "./task-manager";
+import { JsonSerializer, TasksDAO } from "./tasks-manager";
 
 // Command-line arguments
 const args: string[] = process.argv.slice(2);
