@@ -7,10 +7,10 @@
     "task-cli": "./dist/index.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "start": "node dist/app.js",
-    "dev": "tsc --watch"
+    "dev": "tsc --watch",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -24,6 +24,7 @@
   "homepage": "https://github.com/rinnaaza/task-tracker-cli#readme",
   "devDependencies": {
     "@types/express": "^4.17.21",
+    "@types/jest": "^29.5.12",
     "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^8.2.0",
     "@typescript-eslint/parser": "^8.2.0",
@@ -34,6 +35,8 @@
     "typescript": "^5.5.4"
   },
   "dependencies": {
+    "ts-jest": "^29.2.5",
+    "ts-node": "^10.9.2",
     "uuid": "^10.0.0"
   }
 }
