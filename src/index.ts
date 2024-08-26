@@ -2,13 +2,15 @@
 import { TaskList } from "./task-list";
 import { printHelp } from "./print-help";
 import { printTasks } from "./print-tasks";
+import { JsonSerializer, TasksDAO } from "./task-manager";
 
 // Command-line arguments
 const args: string[] = process.argv.slice(2);
 const command: string = args[0];
 const taskArguments: string[] = Array.from(args.slice(1));
 
-const taskList: TaskList = new TaskList("user");
+const tasksManager = new JsonSerializer();
+const taskList: TaskList = new TaskList(tasksManager, "user", "../json-data");
 
 let taskIndex: number;
 
