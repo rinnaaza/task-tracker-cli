@@ -1,16 +1,34 @@
 #! /usr/bin/env node
+
+import path from "path";
+import { config } from "dotenv";
+
 import { TaskList } from "./task-list";
 import { printHelp } from "./print-help";
 import { printTasks } from "./print-tasks";
-import { JsonSerializer, TasksDAO } from "./tasks-manager";
+import { JsonSerializer } from "@services/json-serializer";
+import { DatabaseService } from "@services/database-service";
+
+config();
 
 // Command-line arguments
 const args: string[] = process.argv.slice(2);
 const command: string = args[0];
 const taskArguments: string[] = Array.from(args.slice(1));
 
-const tasksManager = new JsonSerializer();
-const taskList: TaskList = new TaskList(tasksManager, "user", "../json-data");
+const title: string = "my-tasks";
+
+// const jsonFilePath: string = path.join(__dirname, "../json-data/my-tasks.json");
+
+// const tasksManager = new JsonSerializer(jsonFilePath);
+
+const uri: string = process.env.DATABASE_URI ?? "hello";
+const options: object = {};
+const dbName: string = process.env.DATABASE_NAME ?? "";
+
+const tasksManager = new DatabaseService(uri, options, dbName);
+
+const taskList: TaskList = new TaskList(tasksManager, title);
 
 let taskIndex: number;
 
