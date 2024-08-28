@@ -7,7 +7,7 @@
     "task-cli": "./dist/index.js"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && tsc-alias",
     "start": "node dist/app.js",
     "dev": "tsc --watch",
     "test": "jest"
@@ -32,9 +32,13 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "prettier": "^3.3.3",
+    "tsc-alias": "^1.8.10",
     "typescript": "^5.5.4"
   },
   "dependencies": {
+    "@types/mongodb": "^4.0.7",
+    "dotenv": "^16.4.5",
+    "mongodb": "^6.8.0",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
     "uuid": "^10.0.0"
