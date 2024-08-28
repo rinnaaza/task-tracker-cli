@@ -7,7 +7,7 @@ const printHelp = (): void => {
         delete <index>                      Delete existing task at a specific index.
         mark-in-progress <index>            Update status of existing task at a specific index to in progress.
         mark-done <index>                   Update status of existing task at a specific index to done.
-        mark-not-done <index>               Update status of existing task at a specific index to not done.
+        mark-todo <index>                   Update status of existing task at a specific index to not done.
         list                                List all tasks.
         list in-progress                    List in progress tasks.
         list done                           List all done tasks.

@@ -18,15 +18,19 @@ const taskArguments: string[] = Array.from(args.slice(1));
 
 const title: string = "my-tasks";
 
-// const jsonFilePath: string = path.join(__dirname, "../json-data/my-tasks.json");
+// Store tasks in json file
+const jsonFilePath: string = path.join(__dirname, "../json-data/my-tasks.json");
 
-// const tasksManager = new JsonSerializer(jsonFilePath);
+const tasksManager = new JsonSerializer(jsonFilePath);
+// ------------------------
 
-const uri: string = process.env.DATABASE_URI ?? "hello";
-const options: object = {};
-const dbName: string = process.env.DATABASE_NAME ?? "";
+// Store data in MongoDb document (Uncomment this part to use MongoDb):
+// const uri: string = process.env.DATABASE_URI ?? "hello";
+// const options: object = {};
+// const dbName: string = process.env.DATABASE_NAME ?? "";
 
-const tasksManager = new DatabaseService(uri, options, dbName);
+// const tasksManager = new DatabaseService(uri, options, dbName);
+// ----------------------------------
 
 const taskList: TaskList = new TaskList(tasksManager, title);
 
@@ -57,7 +61,7 @@ switch (command) {
         taskList.updateTaskStatus(--taskIndex, "done");
 
         break;
-    case "mark-not-done":
+    case "mark-todo":
         taskIndex = parseInt(taskArguments[0]);
         taskList.updateTaskStatus(--taskIndex, "to do");
 
