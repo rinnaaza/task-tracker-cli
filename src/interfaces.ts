@@ -13,4 +13,9 @@ interface AllTasks {
     tasks: Task[],
 };
 
-export { Task, AllTasks, taskStatus };
+interface TasksManager {
+    getTasks(title: string): Promise<AllTasks>;
+    setTasks(tasks: AllTasks): Promise<void>;
+};
+
+export { Task, AllTasks, taskStatus, TasksManager };
