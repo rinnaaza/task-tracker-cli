@@ -1,24 +1,24 @@
 import { Task } from "./interfaces";
 import { TaskList } from "./task-list";
 
-const printTasks = (taskStatus: string, taskList: TaskList): void => {
+const printTasks = async(taskStatus: string, taskList: TaskList): Promise<void> => {
     let tasks: Task[] = [];
 
     switch (taskStatus) {
         case "done":
-            tasks = taskList.getAllDoneTasks();
+            tasks = await taskList.getAllDoneTasks();
 
             break;
         case "in-progress":
-            tasks = taskList.getAllInProgressTasks();
+            tasks = await taskList.getAllInProgressTasks();
 
             break;
         case "todo":
-            tasks = taskList.getAllTodoTasks();
+            tasks = await taskList.getAllTodoTasks();
 
             break;
         default:
-            tasks = taskList.getAllTasks();
+            tasks = await taskList.getAllTasks();
             break;
     }
 
