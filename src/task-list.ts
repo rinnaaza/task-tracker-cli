@@ -38,6 +38,8 @@ class TaskList {
             };
     
             await this.tasksManager.setTasks(allTasks);
+
+            console.log(`Task added successfully (Id: ${allTasks.tasks.length})`);
         } catch (error) {
             console.error("Error at adding new task: ", error);
 
