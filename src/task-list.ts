@@ -1,24 +1,19 @@
 import path from "path";
 
 import { generateId, notInRange } from "./helpers";
-import { TasksManager } from "./tasks-manager";
-import { Task, AllTasks, taskStatus } from "./interfaces";
+import { Task, AllTasks, taskStatus, TasksManager } from "./interfaces";
 import { OutOfRangeError, NotValidStatusError, EmptyTaskInputError, EmptyTaskListError } from "./errors";
 
 class TaskList {
     private title: string;
-    private path: string;
     private tasksManager: TasksManager;
 
-    constructor(tasksManager: TasksManager, title: string, folderPath: string) {
+    constructor(tasksManager: TasksManager, title: string) {
         this.tasksManager = tasksManager;
         this.title = title.toLowerCase();
-
-        const jsonFilePath = path.join(__dirname, `./${folderPath}/${this.title}-tasks.json`);
-        this.path = jsonFilePath;
     }
 
-    addTask(task: string): void {
+    async addTask(task: string): Promise<void> {
         if (!task) {
             throw new EmptyTaskInputError();
         };
@@ -31,21 +26,27 @@ class TaskList {
             updatedAt: "",            
         }
 
-        let allTasks: AllTasks = this.tasksManager.getTasks(this.title, this.path);
+        try {
+            let allTasks: AllTasks = await this.tasksManager.getTasks(this.title);
 
-        allTasks = {
-            ...allTasks,
-            tasks: [
-                ...(allTasks?.tasks ?? []),
-                newTask,
-            ]
-        };
+            allTasks = {
+                ...allTasks,
+                tasks: [
+                    ...(allTasks?.tasks ?? []),
+                    newTask,
+                ]
+            };
+    
+            await this.tasksManager.setTasks(allTasks);
+        } catch (error) {
+            console.error("Error at adding new task: ", error);
 
-        this.tasksManager.setTasks(this.path, allTasks);
+            throw error;
+        }
     };
 
-    updateTask(taskIndex: number, task: string): void {
-        const tasks = this.getAllTasks();
+    async updateTask(taskIndex: number, task: string): Promise<void> {
+        const tasks: Task[] = await this.getAllTasks();
 
         if (!tasks.length) {
             throw new EmptyTaskListError();
@@ -59,19 +60,25 @@ class TaskList {
             throw new EmptyTaskInputError();
         };
 
-        let allTasks: AllTasks = this.tasksManager.getTasks(this.title, this.path);
+        try {
+            let allTasks: AllTasks = await this.tasksManager.getTasks(this.title);
 
-        allTasks.tasks[taskIndex] = {
-            ...allTasks.tasks[taskIndex],
-            description: task,
-            updatedAt: `${new Date().toLocaleTimeString()} ${new Date().toLocaleDateString()}`,
-        };
+            allTasks.tasks[taskIndex] = {
+                ...allTasks.tasks[taskIndex],
+                description: task,
+                updatedAt: `${new Date().toLocaleTimeString()} ${new Date().toLocaleDateString()}`,
+            };
 
-        this.tasksManager.setTasks(this.path, allTasks);
+            await this.tasksManager.setTasks(allTasks);    
+        } catch (error) {
+            console.error("Error at updating a task: ", error);
+
+            throw error;
+        }
     };
 
-    public deleteTask(taskIndex: number): void {
-        const tasks = this.getAllTasks();
+    async deleteTask(taskIndex: number): Promise<void> {
+        const tasks: Task[] = await this.getAllTasks();
 
         if (!tasks.length) {
             throw new EmptyTaskListError();
@@ -81,18 +88,24 @@ class TaskList {
             throw new OutOfRangeError();
         };
 
-        let allTasks: AllTasks = this.tasksManager.getTasks(this.title, this.path);
+        try {
+            let allTasks: AllTasks = await this.tasksManager.getTasks(this.title);
 
-        const filteredTasks = {
-            ...allTasks,
-            tasks: allTasks.tasks.filter((_, index) => index !== taskIndex),
-        };
+            const filteredTasks = {
+                ...allTasks,
+                tasks: allTasks.tasks.filter((_, index) => index !== taskIndex),
+            };
+    
+            await this.tasksManager.setTasks(filteredTasks);    
+        } catch (error) {
+            console.error("Error at deleting a task: ", error);
 
-        this.tasksManager.setTasks(this.path, filteredTasks);
+            throw error;
+        }
     };
 
-    public updateTaskStatus(taskIndex: number, status: taskStatus): void {
-        const tasks = this.getAllTasks();
+    async updateTaskStatus(taskIndex: number, status: taskStatus): Promise<void> {
+        const tasks: Task[] = await this.getAllTasks();
 
         if (!tasks.length) {
             throw new EmptyTaskListError();
@@ -106,34 +119,70 @@ class TaskList {
             throw new NotValidStatusError();
         };
 
-        let allTasks: AllTasks = this.tasksManager.getTasks(this.title, this.path);
+        try {
+            let allTasks: AllTasks = await this.tasksManager.getTasks(this.title);
         
-        allTasks.tasks[taskIndex] = {
-            ...allTasks.tasks[taskIndex],
-            status,
-            updatedAt: `${new Date().toLocaleTimeString()} ${new Date().toLocaleDateString()}`,
-        };
+            allTasks.tasks[taskIndex] = {
+                ...allTasks.tasks[taskIndex],
+                status,
+                updatedAt: `${new Date().toLocaleTimeString()} ${new Date().toLocaleDateString()}`,
+            };
+    
+            await this.tasksManager.setTasks(allTasks);
+        } catch (error) {
+            console.error("Error at updating a task status: ", error);
 
-        this.tasksManager.setTasks(this.path, allTasks);
+            throw error;
+        }
     }
 
-    public getAllTasks(): Task[] {
-        const allTasks: AllTasks = this.tasksManager.getTasks(this.title, this.path);
+    async getAllTasks(): Promise<Task[]> {
+        try {
+            const allTasks: AllTasks = await this.tasksManager.getTasks(this.title);
 
-        return allTasks.tasks;
+            return allTasks.tasks;
+        } catch (error) {
+            console.error("Error at getting tasks: ", error);
+
+            throw error;
+        }
     };
 
-    public getAllDoneTasks = (): Task[] => (
-        this.getAllTasks().filter(task => task.status === "done")
-    );
+    async getAllDoneTasks(): Promise<Task[]> {      
+        try {
+            const tasks: Task[] = await this.getAllTasks();
 
-    public getAllTodoTasks = (): Task[] => (
-        this.getAllTasks().filter(task => task.status === "to do")
-    );
+            return tasks.filter(task => task.status === "done");
+        } catch (error) {
+            console.error("Error at getting tasks: ", error);
 
-    public getAllInProgressTasks = (): Task[] => (
-        this.getAllTasks().filter(task => task.status === "in progress")
-    );
+            throw error;
+        }
+    };
+
+    async getAllTodoTasks(): Promise<Task[]> {
+        try {
+            const tasks: Task[] = await this.getAllTasks();
+
+            return tasks.filter(task => task.status === "to do");
+        } catch (error) {
+            console.error("Error at getting tasks: ", error);
+
+            throw error;
+        }
+    };
+
+    async getAllInProgressTasks(): Promise<Task[]> {
+        try {
+            const tasks: Task[] = await this.getAllTasks();
+
+            return tasks.filter(task => task.status === "in progress");
+        } catch (error) {
+            console.error("Error at getting tasks: ", error);
+
+            throw error;
+        }
+    };
 };
 
 export { TaskList };
