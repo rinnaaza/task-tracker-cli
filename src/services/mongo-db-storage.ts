@@ -1,8 +1,8 @@
 import { MongoClient, Db, Collection } from "mongodb";
 
-import { AllTasks, TasksManager } from "../interfaces";
+import { IAllTasks, IStorageService } from "../interfaces";
 
-class DatabaseService implements TasksManager {
+class MongoDbStorage implements IStorageService {
     private client: MongoClient;
     private db: Db | null = null;
     private dbName: string;
@@ -33,7 +33,7 @@ class DatabaseService implements TasksManager {
         }
     }
 
-    private getCollection(collectionName: string): Collection<AllTasks> {
+    private getCollection(collectionName: string): Collection<IAllTasks> {
         if (!this.db) {
             throw new Error("Not connected to the database");
         }
@@ -41,7 +41,7 @@ class DatabaseService implements TasksManager {
         return this.db.collection(collectionName);
     }
 
-    async getTasks(title: string): Promise<AllTasks> {
+    async getTasks(title: string): Promise<IAllTasks> {
         try {
             await this.connect();
 
@@ -62,7 +62,7 @@ class DatabaseService implements TasksManager {
         }
     };
 
-    async setTasks(tasks: AllTasks): Promise<void> {
+    async setTasks(tasks: IAllTasks): Promise<void> {
         try {
             await this.connect();
 
@@ -80,4 +80,4 @@ class DatabaseService implements TasksManager {
     };
 };
 
-export { DatabaseService };
+export { MongoDbStorage };

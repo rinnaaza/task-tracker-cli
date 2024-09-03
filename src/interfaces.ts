@@ -1,6 +1,6 @@
-type taskStatus = "to do" | "in progress" | "done";
+enum taskStatus { todo = "to do", inProgress = "in progress", done = "done" };
 
-interface Task {
+interface ITask {
     id: string;
     description: string,
     status: taskStatus,
@@ -8,14 +8,14 @@ interface Task {
     updatedAt: string,
 };
 
-interface AllTasks {
+interface IAllTasks {
     title: string;
-    tasks: Task[],
+    tasks: ITask[],
 };
 
-interface TasksManager {
-    getTasks(title: string): Promise<AllTasks>;
-    setTasks(tasks: AllTasks): Promise<void>;
+interface IStorageService {
+    getTasks(title: string): Promise<IAllTasks>;
+    setTasks(tasks: IAllTasks): Promise<void>;
 };
 
-export { Task, AllTasks, taskStatus, TasksManager };
+export { ITask, IAllTasks, taskStatus, IStorageService };

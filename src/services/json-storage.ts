@@ -1,26 +1,27 @@
 import fs from "fs";
+import path from "path";
 
-import { AllTasks, TasksManager } from "../interfaces";
+import { IAllTasks, IStorageService } from "../interfaces";
 
-class JsonSerializer implements TasksManager {
-    private path: string;
+class JsonStorage implements IStorageService {
+    private filePath: string;
 
     constructor(path: string) {
-        this.path = path;
+        this.filePath = path;
     }
 
-    async getTasks(title: string): Promise<AllTasks> {
+    async getTasks(title: string): Promise<IAllTasks> {
         try {
-            const tasks: string = await fs.promises.readFile(this.path, { encoding: "utf8" });
+            const tasks: string = await fs.promises.readFile(this.filePath, { encoding: "utf8" });
 
-            const parsedData: AllTasks = JSON.parse(tasks);
+            const parsedData: IAllTasks = JSON.parse(tasks);
 
             return parsedData;
         } catch (error) {
             if (error instanceof Error) {
                 if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
                     try {
-                        const defaultData: AllTasks = { title, tasks: [] };
+                        const defaultData: IAllTasks = { title, tasks: [] };
 
                         await this.setTasks(defaultData);
 
@@ -43,9 +44,15 @@ class JsonSerializer implements TasksManager {
         }
     };
 
-    async setTasks(tasks: AllTasks): Promise<void> {
+    async setTasks(tasks: IAllTasks): Promise<void> {
         try {
-            fs.writeFileSync(this.path, JSON.stringify(tasks, null, 2));
+            const dir = path.dirname(this.filePath);
+
+            if (!fs.existsSync(dir)) {
+                fs.mkdirSync(dir, { recursive: true });
+            }
+
+            fs.writeFileSync(this.filePath, JSON.stringify(tasks, null, 2));
         } catch (error) {
             console.log("Error creating a json:", error);
         }
@@ -54,4 +61,4 @@ class JsonSerializer implements TasksManager {
 
 
 
-export { JsonSerializer };
+export { JsonStorage };

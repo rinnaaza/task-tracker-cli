@@ -3,9 +3,9 @@ class OutOfRangeError extends Error {
         super("Index is out of range !");
     }
 };
-class NotValidStatusError extends Error {
+class invalidInput extends Error {
     constructor() {
-        super("Status must be 'todo', 'in progress' or 'done'");
+        super("invalid input");
     }
 };
 
@@ -21,4 +21,4 @@ class EmptyTaskListError extends Error {
     }
 };
 
-export { OutOfRangeError, NotValidStatusError, EmptyTaskInputError, EmptyTaskListError };
+export { OutOfRangeError, invalidInput, EmptyTaskInputError, EmptyTaskListError };
