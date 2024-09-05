@@ -3,7 +3,7 @@ class OutOfRangeError extends Error {
         super("Index is out of range !");
     }
 };
-class invalidInput extends Error {
+class invalidInputError extends Error {
     constructor() {
         super("invalid input");
     }
@@ -21,4 +21,4 @@ class EmptyTaskListError extends Error {
     }
 };
 
-export { OutOfRangeError, invalidInput, EmptyTaskInputError, EmptyTaskListError };
+export { OutOfRangeError, invalidInputError, EmptyTaskInputError, EmptyTaskListError };

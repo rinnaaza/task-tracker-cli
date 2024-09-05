@@ -2,7 +2,7 @@ import path from "path";
 
 import { generateId, inRange } from "./helpers";
 import { ITask, IAllTasks, taskStatus, IStorageService } from "./interfaces";
-import { OutOfRangeError, invalidInput, EmptyTaskInputError, EmptyTaskListError } from "./errors";
+import { OutOfRangeError, invalidInputError, EmptyTaskInputError, EmptyTaskListError } from "./errors";
 
 class TaskManager {
     private title: string;
@@ -59,7 +59,7 @@ class TaskManager {
         };
 
         if (!status && !task) {
-            throw new invalidInput();
+            throw new invalidInputError();
         };
         
         try {
