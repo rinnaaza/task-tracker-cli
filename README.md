@@ -64,9 +64,7 @@ Compile:
 ```
 
 ### Configuration:
-If you would like to store the tasks list in MongoDb, uncomment code in index.ts:
-
-create .env file in the root that will have the following environment variables following .env.example:
+If you would like to store the tasks list in MongoDb, change in `./config.ts`  `const STORAGE=mongodb` and create .env file in the root that will have the following environment variables following .env.example:
 ```
     DATABSE_URI=""
     DATABASE_NAME=""
